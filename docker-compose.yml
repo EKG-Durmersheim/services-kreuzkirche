@@ -63,14 +63,15 @@ services:
       - wordpress-db
     image: wordpress:latest
     volumes:
-      - ./data/wordpress/wordpress_data:/var/www/html
+      - ./data/wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./data/wordpress/themes:/var/www/html/wp-content/themes
+      - ./data/wordpress/uploads:/var/www/html/wp-content/uploads
     # Ports: 80
     restart: unless-stopped
     environment:
-      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_HOST: wordpress-db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
 
   # Uptime Kuma
   uptime-kuma:
