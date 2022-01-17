@@ -1,0 +1,105 @@
+version: '3.3'
+
+# Services-Kreuzkirche Config by Niklas Arnitz 2022
+# Persistent data is stored in the ./data directory
+# Config files are stored in the ./config directory
+
+services:
+  # NGINX-Proxymanager
+  nginx-proxymanager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      # Add any other Stream port you want to expose
+    volumes:
+      - ./data/nginx-proxymanager/data:/data
+      - ./data/nginx-proxymanager/letsencrypt:/etc/letsencrypt
+
+  # Nextcloud - Open Source Cloud Solution
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - "./config/nextcloud:/config"
+      - '/mnt/data-volume/cloud:/data'
+    restart: unless-stopped
+    depends_on:
+      - nextcloud-mariadb
+    # Ports: 80, 443
+
+  nextcloud-mariadb:
+    image: ghcr.io/linuxserver/mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=mariadbpassword
+      - TZ=Europe/Berlin
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=ncuser
+      - MYSQL_PASSWORD=ncpassword
+    volumes:
+      - ./data/nextcloud-mariadb:/config
+    restart: unless-stopped
+
+  # Wordpress
+  wordpress-db:
+    image: mysql:5.7
+    volumes:
+      - ./data/wordpress/db_data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - wordpress-db
+    image: wordpress:latest
+    volumes:
+      - ./data/wordpress/wordpress_data:/var/www/html
+    # Ports: 80
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  # Borgmatic
+  borgmatic:
+    volumes:
+      - '/opt/services-kreuzkirche/:/mnt/source:ro'
+      - '/mnt/data-volume/borgbackup-services-kreuzkirche/:/mnt/borg-repository'
+      - '/opt/docker/docker-borgmatic/data/borgmatic.d:/etc/borgmatic.d/'
+      - '/opt/docker/docker-borgmatic/data/.config/borg:/root/.config/borg'
+      - '/opt/docker/docker-borgmatic/data/.ssh:/root/.ssh'
+      - '/opt/docker/docker-borgmatic/data/.cache/borg:/root/.cache/borg'
+    environment:
+      - TZ=Europe/Berlin
+    image: b3vis/borgmatic
+
+  # Uptime Kuma
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    restart: unless-stopped
+    volumes:
+      - "./data/uptime-kuma/:/app/data"
+    # Ports: 3001
+    depends_on:
+      - nginx-proxymanager
+      - nextcloud
+      - nextcloud-mariadb
+      - wordpress
+      - wordpress-db
+
+networks:
+  default:
+    external:
+      name: nginxproxymanager
