@@ -71,20 +71,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
-
-  # Borgmatic
-  borgmatic:
-    volumes:
-      - '/opt/services-kreuzkirche/:/mnt/source:ro'
-      - '/mnt/data-volume/borgbackup-services-kreuzkirche/:/mnt/borg-repository'
-      - './data/borgmatic/borgmatic.d:/etc/borgmatic.d/'
-      - './data/borgmatic/data/.config/borg:/root/.config/borg'
-      - './data/borgmatic/data/.ssh:/root/.ssh'
-      - './data/borgmatic/data/.cache/borg:/root/.cache/borg'
-    environment:
-      - TZ=Europe/Berlin
-    image: b3vis/borgmatic
-
+      
   # Uptime Kuma
   uptime-kuma:
     image: louislam/uptime-kuma:latest
