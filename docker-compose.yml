@@ -47,47 +47,31 @@ services:
     restart: unless-stopped
 
   # Wordpress
-  wordpress-db:
-    image: mysql:5.7
+  wordpress-nginx:
+    image: lscr.io/linuxserver/nginx
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
     volumes:
-      - ./data/wordpress/db_data:/var/lib/mysql
+      - ./data/wordpress/www/:/config
+    # Ports: 80, 443
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: wordpress
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
 
-  wordpress:
-    image: wordpress:latest
-    # Ports: 80
+  mariadb:
+    image: lscr.io/linuxserver/mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=wordpress
+      - TZ=Europe/London
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
     volumes:
-      - ./config/wordpress/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./data/wordpress/wp-app:/var/www/html
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "wordpress"
-    depends_on:
-      - db
-    links:
-      - db
-
-  db:
-    image: mysql:latest
+      - ./data/wordpress/db/:/config
     # Ports: 3306
-    command: [
-        '--default_authentication_plugin=mysql_native_password',
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci'
-    ]
-    volumes:
-      - ./data/wordpress/wp-data:/docker-entrypoint-initdb.d
-      - ./data/wordpress/db_data:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: "wordpress"
-      MYSQL_ROOT_PASSWORD: "wordpress"
+    restart: unless-stopped
 
   # Uptime Kuma
   uptime-kuma:
