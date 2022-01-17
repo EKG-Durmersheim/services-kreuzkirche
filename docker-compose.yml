@@ -77,10 +77,10 @@ services:
     volumes:
       - '/opt/services-kreuzkirche/:/mnt/source:ro'
       - '/mnt/data-volume/borgbackup-services-kreuzkirche/:/mnt/borg-repository'
-      - '/opt/docker/docker-borgmatic/data/borgmatic.d:/etc/borgmatic.d/'
-      - '/opt/docker/docker-borgmatic/data/.config/borg:/root/.config/borg'
-      - '/opt/docker/docker-borgmatic/data/.ssh:/root/.ssh'
-      - '/opt/docker/docker-borgmatic/data/.cache/borg:/root/.cache/borg'
+      - './data/borgmatic/borgmatic.d:/etc/borgmatic.d/'
+      - './data/borgmatic/data/.config/borg:/root/.config/borg'
+      - './data/borgmatic/data/.ssh:/root/.ssh'
+      - './data/borgmatic/data/.cache/borg:/root/.cache/borg'
     environment:
       - TZ=Europe/Berlin
     image: b3vis/borgmatic
