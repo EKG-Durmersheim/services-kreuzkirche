@@ -46,7 +46,7 @@ services:
       - ./data/nextcloud-mariadb:/config
     restart: unless-stopped
 
-  # Wordpress
+  # Wordpress - Production
   wordpress:
     image: wordpress:latest
     # Ports: 80
@@ -74,6 +74,38 @@ services:
     volumes:
       - ./data/wordpress/wp-data:/docker-entrypoint-initdb.d
       - ./data/wordpress/db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: wordpress
+
+  # Wordpress - Staging
+  wordpress-staging:
+    image: wordpress:latest
+    # Ports: 80
+    volumes:
+      - ./config/wordpress-staging/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./data/wordpress-staging/wp-app:/var/www/html/
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: wordpress
+    depends_on:
+      - wordpress-staging-db
+    links:
+      - wordpress-staging-db
+
+  wordpress-staging-db:
+    image: mysql:latest
+    # Ports: 3306
+    command: [
+        '--default_authentication_plugin=mysql_native_password',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci'
+    ]
+    volumes:
+      - ./data/wordpress-staging/wp-data:/docker-entrypoint-initdb.d/
+      - ./data/wordpress-staging/db_data:/var/lib/mysql/
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
