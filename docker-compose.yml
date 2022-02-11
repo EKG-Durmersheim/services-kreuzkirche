@@ -16,6 +16,7 @@ services:
     volumes:
       - ./data/nginx-proxymanager/data:/data
       - ./data/nginx-proxymanager/letsencrypt:/etc/letsencrypt
+    user: "1000:1000"
 
   # Nextcloud - Open Source Cloud Solution
   nextcloud:
@@ -62,6 +63,7 @@ services:
       - wordpress-db
     links:
       - wordpress-db
+    user: "1000:1000"
 
   wordpress-db:
     image: mysql:latest
@@ -77,6 +79,7 @@ services:
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
+    user: "1000:1000"
 
   # Wordpress - Staging
   wordpress-staging:
@@ -94,6 +97,7 @@ services:
       - wordpress-staging-db
     links:
       - wordpress-staging-db
+    user: "1000:1000"
 
   wordpress-staging-db:
     image: mysql:latest
@@ -109,6 +113,7 @@ services:
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
+    user: "1000:1000"
 
   # Zammad - Ticketing System
   zammad-backup:
@@ -127,6 +132,7 @@ services:
     volumes:
       - ./data/zammad/zammad-backup:/var/tmp/zammad
       - ./data/zammad/zammad-data:/opt/zammad
+    user: "1000:1000"
 
   zammad-elasticsearch:
     environment:
@@ -135,6 +141,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/elasticsearch-data:/usr/share/elasticsearch/data
+    user: "1000:1000"
       
   zammad-init:
     command: ["zammad-init"]
@@ -149,11 +156,13 @@ services:
     restart: on-failure
     volumes:
       - ./data/zammad/zammad-data:/opt/zammad
+    user: "1000:1000"
 
   zammad-memcached:
     command: memcached -m 256M
     image: memcached:1.6.10-alpine
     restart: unless-stopped
+  user: "1000:1000"
 
   zammad-nginx:
     command: ["zammad-nginx"]
@@ -164,6 +173,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/zammad-data:/opt/zammad
+    user: "1000:1000"
 
   zammad-postgresql:
     environment:
@@ -173,6 +183,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/postgresql-data:/var/lib/postgresql/data
+    user: "1000:1000"
 
   zammad-railsserver:
     command: ["zammad-railsserver"]
@@ -187,10 +198,12 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/zammad-data:/opt/zammad
+    user: "1000:1000"
 
   zammad-redis:
     image: redis:6.2.5-alpine
     restart: unless-stopped
+    user: "1000:1000"
 
   zammad-scheduler:
     command: ["zammad-scheduler"]
@@ -205,6 +218,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/zammad-data:/opt/zammad
+    user: "1000:1000"
 
   zammad-websocket:
     command: ["zammad-websocket"]
@@ -219,8 +233,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/zammad/zammad-data:/opt/zammad
-  
-
+    user: "1000:1000"
 
   # Uptime Kuma
   uptime-kuma:
@@ -235,6 +248,7 @@ services:
       - nextcloud-mariadb
       - wordpress
       - wordpress-db
+    user: "1000:1000"
 
 networks:
   default:
