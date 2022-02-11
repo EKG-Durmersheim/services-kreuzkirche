@@ -162,8 +162,6 @@ services:
     command: memcached -m 256M
     image: memcached:1.6.10-alpine
     restart: unless-stopped
-  user: 1000
-  group: 1000
 
   zammad-nginx:
     command: ["zammad-nginx"]
