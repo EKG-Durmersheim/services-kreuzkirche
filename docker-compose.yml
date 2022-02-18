@@ -63,7 +63,6 @@ services:
       - wordpress-production-db
 
   wordpress-production-db:
-    user: www-data
     image: mysql:latest
     # Ports: 3306
     command: [
@@ -95,7 +94,6 @@ services:
       - wordpress-staging-db
 
   wordpress-staging-db:
-    user: www-data
     image: mysql:latest
     # Ports: 3306
     command: [
