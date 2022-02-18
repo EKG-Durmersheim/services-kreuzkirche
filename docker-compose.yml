@@ -108,63 +108,6 @@ services:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
 
-  plausible-mail:
-    hostname: mail
-    image: bytemark/smtp
-    restart: always
-
-  plausible_db:
-    image: postgres:12
-    restart: always
-    volumes:
-      - ./data/plausible/db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgres
-
-  plausible_events_db:
-    image: yandex/clickhouse-server:21.3.2.5
-    restart: always
-    volumes:
-      - ./data/plausible/event-data:/var/lib/clickhouse
-      - ./config/plausible/clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
-      - ./config/plausible/clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
-
-  plausible-geoip:
-    hostname: geoip
-    image: maxmindinc/geoipupdate
-    restart: always
-    environment:
-      - GEOIPUPDATE_EDITION_IDS=GeoLite2-Country
-      - GEOIPUPDATE_FREQUENCY=168 # update every 7 days
-      - GEOIPUPDATE_ACCOUNT_ID=678129
-      - GEOIPUPDATE_LICENSE_KEY=1AeerI01k9yDnl9N
-    volumes:
-      - ./data/plausible/geoip:/usr/share/GeoIP
-
-  plausible:
-    image: plausible/analytics:latest
-    restart: always
-    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
-    depends_on:
-      - plausible_db
-      - plausible_events_db
-      - plausible-mail
-      - plausible-geoip
-    # Ports: 8000
-    environment:
-      - ADMIN_USER_EMAIL=it@ekg-durmersheim.de
-      - ADMIN_USER_NAME=it
-      - ADMIN_USER_PWD=2CEk4rnhmesnTu
-      - BASE_URL=https://analytics.ekg-durmersheim.de
-      - SECRET_KEY_BASE=GU+7heNSIXFNBWHaX6GB7I2YtfAnm/mNqi3QkFs+35/S1nHosqNA1TWhbT9mevHLECcbnBRtW5gEAwdUrkZl+A==
-      - GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
-    volumes:
-      - ./data/plausible/geoip:/usr/share/GeoIP
-
 networks:
   default:
     external:
