@@ -154,12 +154,12 @@ services:
       - plausible-geoip
     # Ports: 8000
     environment:
-      ADMIN_USER_EMAIL=it@ekg-durmersheim.de
-      ADMIN_USER_NAME=it
-      ADMIN_USER_PWD=2CEk4rnhmesnTu
-      BASE_URL=analytics.ekg-durmersheim.de
-      SECRET_KEY_BASE=GU+7heNSIXFNBWHaX6GB7I2YtfAnm/mNqi3QkFs+35/S1nHosqNA1TWhbT9mevHLECcbnBRtW5gEAwdUrkZl+A==
-      GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
+      - ADMIN_USER_EMAIL=it@ekg-durmersheim.de
+      - ADMIN_USER_NAME=it
+      - ADMIN_USER_PWD=2CEk4rnhmesnTu
+      - BASE_URL=analytics.ekg-durmersheim.de
+      - SECRET_KEY_BASE=GU+7heNSIXFNBWHaX6GB7I2YtfAnm/mNqi3QkFs+35/S1nHosqNA1TWhbT9mevHLECcbnBRtW5gEAwdUrkZl+A==
+      - GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
     volumes:
       - ./data/plausible/geoip:/usr/share/GeoIP
 
