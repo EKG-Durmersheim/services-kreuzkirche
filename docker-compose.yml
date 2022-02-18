@@ -48,6 +48,7 @@ services:
 
   # Wordpress - Production
   wordpress-production:
+    user: www-data
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -62,6 +63,7 @@ services:
       - wordpress-production-db
 
   wordpress-production-db:
+    user: www-data
     image: mysql:latest
     # Ports: 3306
     command: [
@@ -78,6 +80,7 @@ services:
 
   # Wordpress - Staging
   wordpress-staging:
+    user: www-data
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -92,6 +95,7 @@ services:
       - wordpress-staging-db
 
   wordpress-staging-db:
+    user: www-data
     image: mysql:latest
     # Ports: 3306
     command: [
