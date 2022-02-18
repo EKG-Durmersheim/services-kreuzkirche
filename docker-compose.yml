@@ -48,7 +48,7 @@ services:
 
   # Wordpress - Production
   wordpress-production:
-    user: www-data
+    user: dockerrunner
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -79,7 +79,7 @@ services:
 
   # Wordpress - Staging
   wordpress-staging:
-    user: www-data
+    user: dockerrunner
     image: wordpress:latest
     # Ports: 80
     volumes:
