@@ -17,7 +17,6 @@ services:
       - ./data/nginx-proxymanager/data:/data
       - ./data/nginx-proxymanager/letsencrypt:/etc/letsencrypt
 
-
   # Nextcloud - Open Source Cloud Solution
   nextcloud:
     image: lscr.io/linuxserver/nextcloud:latest
@@ -48,14 +47,14 @@ services:
     restart: unless-stopped
 
   # Wordpress - Production
-  wordpress:
+  wordpress-production:
     image: wordpress:latest
     # Ports: 80
     volumes:
       - ./config/wordpress/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
       - ./data/wp-app:/var/www/html/
     environment:
-      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_HOST: wordpress-production-db
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: wordpress
@@ -64,8 +63,7 @@ services:
     links:
       - wordpress-db
 
-
-  wordpress-db:
+  wordpress-production-db:
     image: mysql:latest
     # Ports: 3306
     command: [
@@ -74,12 +72,11 @@ services:
         '--collation-server=utf8mb4_unicode_ci'
     ]
     volumes:
-      - ./data/wordpress/wp-data:/docker-entrypoint-initdb.d
-      - ./data/wordpress/db_data:/var/lib/mysql
+      - ./data/wordpress-production/wp-data:/docker-entrypoint-initdb.d
+      - ./data/wordpress-production/db_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
-
 
   # Wordpress - Staging
   wordpress-staging:
@@ -89,7 +86,7 @@ services:
       - ./config/wordpress-staging/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
       - ./data/wordpress-staging/wp-app:/var/www/html/
     environment:
-      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_HOST: wordpress-staging-db
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: wordpress
@@ -97,7 +94,6 @@ services:
       - wordpress-staging-db
     links:
       - wordpress-staging-db
-
 
   wordpress-staging-db:
     image: mysql:latest
@@ -113,141 +109,6 @@ services:
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
-
-
-  # Zammad - Ticketing System
-  zammad-backup:
-    command: ["zammad-backup"]
-    depends_on:
-      - zammad-railsserver
-      - zammad-postgresql
-    entrypoint: /usr/local/bin/backup.sh
-    environment:
-      - BACKUP_SLEEP=86400
-      - HOLD_DAYS=10
-      - POSTGRESQL_USER=zammad
-      - POSTGRESQL_PASSWORD=zammad
-    image: zammad/zammad-docker-compose:zammad-postgresql-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/zammad-backup:/var/tmp/zammad
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  zammad-elasticsearch:
-    environment:
-      - discovery.type=single-node
-    image: zammad/zammad-docker-compose:zammad-elasticsearch-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/elasticsearch-data:/usr/share/elasticsearch/data
-
-      
-  zammad-init:
-    command: ["zammad-init"]
-    depends_on:
-      - zammad-postgresql
-    environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      - POSTGRESQL_USER=zammad
-      - POSTGRESQL_PASS=zammad
-      - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-5.0.3-14
-    restart: on-failure
-    volumes:
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  zammad-memcached:
-    command: memcached -m 256M
-    image: memcached:1.6.10-alpine
-    restart: unless-stopped
-
-  zammad-nginx:
-    command: ["zammad-nginx"]
-    # Ports: 8080
-    depends_on:
-      - zammad-railsserver
-    image: zammad/zammad-docker-compose:zammad-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  zammad-postgresql:
-    environment:
-      - POSTGRES_USER=zammad
-      - POSTGRES_PASSWORD=zammad
-    image: zammad/zammad-docker-compose:zammad-postgresql-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/postgresql-data:/var/lib/postgresql/data
-
-
-  zammad-railsserver:
-    command: ["zammad-railsserver"]
-    depends_on:
-      - zammad-memcached
-      - zammad-postgresql
-      - zammad-redis
-    environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  zammad-redis:
-    image: redis:6.2.5-alpine
-    restart: unless-stopped
-
-
-  zammad-scheduler:
-    command: ["zammad-scheduler"]
-    depends_on:
-      - zammad-memcached
-      - zammad-railsserver
-      - zammad-redis
-    environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  zammad-websocket:
-    command: ["zammad-websocket"]
-    depends_on:
-      - zammad-memcached
-      - zammad-railsserver
-      - zammad-redis
-    environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-5.0.3-14
-    restart: unless-stopped
-    volumes:
-      - ./data/zammad/zammad-data:/opt/zammad
-
-
-  # Uptime Kuma
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    restart: unless-stopped
-    volumes:
-      - "./data/uptime-kuma/:/app/data"
-    # Ports: 3001
-    depends_on:
-      - nginx-proxymanager
-      - nextcloud
-      - nextcloud-mariadb
-      - wordpress
-      - wordpress-db
-
 
 networks:
   default:
