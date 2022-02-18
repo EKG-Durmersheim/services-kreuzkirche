@@ -70,7 +70,7 @@ services:
         '--collation-server=utf8mb4_unicode_ci'
     ]
     volumes:
-      - ./data/wordpress-production/wp-app/wp-data:/docker-entrypoint-initdb.d
+      - ./data/wordpress-production/wp-app:/docker-entrypoint-initdb.d
       - ./data/wordpress-production/db_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: wordpress
