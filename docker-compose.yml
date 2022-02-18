@@ -120,7 +120,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
-  plausible_events_db:
+  plausible-events_db:
     image: yandex/clickhouse-server:21.3.2.5
     restart: always
     volumes:
