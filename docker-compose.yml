@@ -109,10 +109,11 @@ services:
       MYSQL_ROOT_PASSWORD: wordpress
 
   plausible-mail:
+    hostname: mail
     image: bytemark/smtp
     restart: always
 
-  plausible-db:
+  plausible_db:
     image: postgres:12
     restart: always
     volumes:
@@ -120,7 +121,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
-  plausible-events_db:
+  plausible_events_db:
     image: yandex/clickhouse-server:21.3.2.5
     restart: always
     volumes:
@@ -133,6 +134,7 @@ services:
         hard: 262144
 
   plausible-geoip:
+    hostname: geoip
     image: maxmindinc/geoipupdate
     restart: always
     environment:
