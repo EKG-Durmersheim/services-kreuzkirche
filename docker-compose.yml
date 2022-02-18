@@ -51,8 +51,8 @@ services:
     image: wordpress:latest
     # Ports: 80
     volumes:
-      - ./config/wordpress/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./data/wp-app:/var/www/html/
+      - ./config/wordpress-production/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./data/wordpress-production/wp-app:/var/www/html/
     environment:
       WORDPRESS_DB_HOST: wordpress-production-db
       WORDPRESS_DB_NAME: wordpress
@@ -70,7 +70,7 @@ services:
         '--collation-server=utf8mb4_unicode_ci'
     ]
     volumes:
-      - ./data/wordpress-production/wp-data:/docker-entrypoint-initdb.d
+      - ./data/wordpress-production/wp-app/wp-data:/docker-entrypoint-initdb.d
       - ./data/wordpress-production/db_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: wordpress
@@ -100,7 +100,7 @@ services:
         '--collation-server=utf8mb4_unicode_ci'
     ]
     volumes:
-      - ./data/wordpress-staging/wp-data:/docker-entrypoint-initdb.d/
+      - ./data/wordpress-staging/wp-app:/docker-entrypoint-initdb.d/
       - ./data/wordpress-staging/db_data:/var/lib/mysql/
     environment:
       MYSQL_DATABASE: wordpress
