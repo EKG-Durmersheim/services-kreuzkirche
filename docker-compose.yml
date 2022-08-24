@@ -25,6 +25,7 @@ services:
         
   # Wordpress - Production
   wordpress-production:
+    user: "1000:1000"
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -57,6 +58,7 @@ services:
 
   # Wordpress - Staging
   wordpress-staging:
+    user: "1000:1000"
     image: wordpress:latest
     # Ports: 80
     volumes:
