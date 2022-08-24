@@ -7,6 +7,7 @@ version: '3.3'
 services:
   # NGINX-Proxymanager
   nginx-proxymanager:
+    user: '1005'
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     ports:
@@ -19,13 +20,14 @@ services:
 
   
   onlyoffice:
+    user: '1005'
     # Ports: 80
     restart: always
     image: onlyoffice/documentserver
         
   # Wordpress - Production
   wordpress-production:
-    user: '1000'
+    user: '1005'
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -41,6 +43,7 @@ services:
     restart: unless-stopped
 
   wordpress-production-db:
+    user: '1005'
     image: mysql:latest
     # Ports: 3306
     command: [
@@ -58,7 +61,7 @@ services:
 
   # Wordpress - Staging
   wordpress-staging:
-    user: '1000'
+    user: '1005'
     image: wordpress:latest
     # Ports: 80
     volumes:
@@ -74,6 +77,7 @@ services:
     restart: unless-stopped
 
   wordpress-staging-db:
+    user: "1005"
     image: mysql:latest
     # Ports: 3306
     command: [
