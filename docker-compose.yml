@@ -20,7 +20,6 @@ services:
 
   
   onlyoffice:
-    user: '1005'
     # Ports: 80
     restart: always
     image: onlyoffice/documentserver
