@@ -17,35 +17,12 @@ services:
       - ./data/nginx-proxymanager/data:/data
       - ./data/nginx-proxymanager/letsencrypt:/etc/letsencrypt
 
-  # Nextcloud - Open Source Cloud Solution
-  nextcloud:
-    image: lscr.io/linuxserver/nextcloud:latest
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
-    volumes:
-      - "./config/nextcloud:/config"
-      - '/mnt/data-volume/cloud:/data'
-    restart: unless-stopped
-    depends_on:
-      - nextcloud-mariadb
-    # Ports: 80, 443
-
-  nextcloud-mariadb:
-    image: ghcr.io/linuxserver/mariadb
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - MYSQL_ROOT_PASSWORD=mariadbpassword
-      - TZ=Europe/Berlin
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=ncuser
-      - MYSQL_PASSWORD=ncpassword
-    volumes:
-      - ./data/nextcloud-mariadb:/config
-    restart: unless-stopped
-
+  
+  onlyoffice:
+    # Ports: 80
+    restart: always
+    image: onlyoffice/documentserver
+        
   # Wordpress - Production
   wordpress-production:
     user: '1000'
