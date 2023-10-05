@@ -1,5 +1,2 @@
-#!/bin/sh
-docker-compose down
-git pull
-chown docker-runner:docker-runner -R *
-docker-compose up -d
+#!/bin/bash
+for dir in ./services/*; do (cd "$dir" && docker compose pull && docker-compose down && docker-compose up -d); done

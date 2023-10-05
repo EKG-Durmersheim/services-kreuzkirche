@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  onlyoffice:
+    # Ports: 80
+    restart: unless-stopped
+    image: onlyoffice/documentserver
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onlyoffice.entrypoints=http"
+      - "traefik.http.routers.onlyoffice.rule=Host(`office.ekg-durmersheim.de`)"
+      - "traefik.http.middlewares.onlyoffice-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.onlyoffice.middlewares=onlyoffice-https-redirect"
+      - "traefik.http.routers.onlyoffice-secure.entrypoints=https"
+      - "traefik.http.routers.onlyoffice-secure.rule=Host(`office.ekg-durmersheim.de`)"
+      - "traefik.http.routers.onlyoffice-secure.tls=true"
+      - "traefik.http.routers.onlyoffice-secure.service=onlyoffice"
+      - "traefik.http.services.onlyoffice.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+networks:
+  default:
+    external:
+      name: proxy
