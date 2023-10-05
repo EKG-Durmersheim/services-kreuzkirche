@@ -1,0 +1,52 @@
+version: '3.3'
+
+services:
+  wordpress-staging:
+    user: "1000:1000"
+    image: wordpress:latest
+    # Ports: 80
+    volumes:
+      - ../config/wordpress-staging/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ../data/wordpress-staging/wp-app:/var/www/html/
+    environment:
+      WORDPRESS_DB_HOST: wordpress-staging-db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: wordpress
+    depends_on:
+      - wordpress-staging-db
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress-production.entrypoints=http"
+      - "traefik.http.routers.wordpress-production.rule=Host(`dev.ekg-durmersheim.de`)"
+      - "traefik.http.middlewares.wordpress-production-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.wordpress-production.middlewares=wordpress-production-https-redirect"
+      - "traefik.http.routers.wordpress-production-secure.entrypoints=https"
+      - "traefik.http.routers.wordpress-production-secure.rule=Host(`dev.ekg-durmersheim.de`)"
+      - "traefik.http.routers.wordpress-production-secure.tls=true"
+      - "traefik.http.routers.wordpress-production-secure.service=wordpress-production"
+      - "traefik.http.services.wordpress-production.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+  wordpress-production-db:
+    image: mysql:latest
+    # Ports: 3306
+    command:
+      [
+        '--default_authentication_plugin=mysql_native_password',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci'
+      ]
+    volumes:
+      - ../data/wordpress-production/wp-app:/docker-entrypoint-initdb.d
+      - ../data/wordpress-production/db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: wordpress
+    restart: unless-stopped
+
+networks:
+  default:
+    external:
+      name: proxy
