@@ -1,5 +1,7 @@
 data/nginx-proxymanager/
 data/wordpress-production/
 data/wordpress-staging/
+data/plausible/
+services/plausible/plausible-conf.env
 data/traefik/acme.json
 services/traefik/.env
