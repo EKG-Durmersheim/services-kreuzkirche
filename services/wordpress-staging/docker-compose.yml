@@ -6,8 +6,8 @@ services:
     image: wordpress:latest
     # Ports: 80
     volumes:
-      - ../config/wordpress-staging/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ../data/wordpress-staging/wp-app:/var/www/html/
+      - ../../config/wordpress-staging/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ../../data/wordpress-staging/wp-app:/var/www/html/
     environment:
       WORDPRESS_DB_HOST: wordpress-staging-db
       WORDPRESS_DB_NAME: wordpress
@@ -18,18 +18,18 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wordpress-production.entrypoints=http"
-      - "traefik.http.routers.wordpress-production.rule=Host(`dev.ekg-durmersheim.de`)"
-      - "traefik.http.middlewares.wordpress-production-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.wordpress-production.middlewares=wordpress-production-https-redirect"
-      - "traefik.http.routers.wordpress-production-secure.entrypoints=https"
-      - "traefik.http.routers.wordpress-production-secure.rule=Host(`dev.ekg-durmersheim.de`)"
-      - "traefik.http.routers.wordpress-production-secure.tls=true"
-      - "traefik.http.routers.wordpress-production-secure.service=wordpress-production"
-      - "traefik.http.services.wordpress-production.loadbalancer.server.port=80"
+      - "traefik.http.routers.wordpress-staging.entrypoints=http"
+      - "traefik.http.routers.wordpress-staging.rule=Host(`dev.ekg-durmersheim.de`)"
+      - "traefik.http.middlewares.wordpress-staging-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.wordpress-staging.middlewares=wordpress-staging-https-redirect"
+      - "traefik.http.routers.wordpress-staging-secure.entrypoints=https"
+      - "traefik.http.routers.wordpress-staging-secure.rule=Host(`dev.ekg-durmersheim.de`)"
+      - "traefik.http.routers.wordpress-staging-secure.tls=true"
+      - "traefik.http.routers.wordpress-staging-secure.service=wordpress-staging"
+      - "traefik.http.services.wordpress-staging.loadbalancer.server.port=80"
       - "traefik.docker.network=proxy"
 
-  wordpress-production-db:
+  wordpress-staging-db:
     image: mysql:latest
     # Ports: 3306
     command:
@@ -39,8 +39,8 @@ services:
         '--collation-server=utf8mb4_unicode_ci'
       ]
     volumes:
-      - ../data/wordpress-production/wp-app:/docker-entrypoint-initdb.d
-      - ../data/wordpress-production/db_data:/var/lib/mysql
+      - ../../data/wordpress-staging/wp-app:/docker-entrypoint-initdb.d/
+      - ../../data/wordpress-staging/db_data:/var/lib/mysql/
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_ROOT_PASSWORD: wordpress
