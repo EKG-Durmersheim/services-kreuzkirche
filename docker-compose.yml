@@ -16,7 +16,6 @@ services:
     volumes:
       - ./data/nginx-proxymanager/data:/data
       - ./data/nginx-proxymanager/letsencrypt:/etc/letsencrypt
-
   
   onlyoffice:
     # Ports: 80
@@ -56,6 +55,7 @@ services:
       MYSQL_ROOT_PASSWORD: wordpress
     restart: unless-stopped
 
+
   # Wordpress - Staging
   wordpress-staging:
     user: "1000:1000"
@@ -77,9 +77,9 @@ services:
     image: mysql:latest
     # Ports: 3306
     command: [
-        '--default_authentication_plugin=mysql_native_password',
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci'
+       '--default_authentication_plugin=mysql_native_password',
+       '--character-set-server=utf8mb4',
+       '--collation-server=utf8mb4_unicode_ci'
     ]
     volumes:
       - ./data/wordpress-staging/wp-app:/docker-entrypoint-initdb.d/
