@@ -13,8 +13,7 @@ services:
       - 443:443
     environment:
       - HETZNER_API_KEY=${HETZNER_API_KEY}
-      - HETZNER_TTL=60
-      - HETZNER_POLLING_INTERVAL=60
+      - HETZNER_TTL=60 HETZNER_POLLING_INTERVAL=60
       - HETZNER_PROPAGATION_TIMEOUT=3600
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -23,19 +22,27 @@ services:
       - ../../data/traefik/acme.json:/acme.json
       - ../../data/traefik/config.yml:/config.yml:ro
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.ekg-durmersheim.de`)"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.ekg-durmersheim.de`)"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=hetzner"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=ekg-durmersheim.de"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.ekg-durmersheim.de"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
+      traefik.enable: true
+      traefik.http.routers.traefik.entrypoints: http
+      traefik.http.routers.traefik.rule: Host(`traefik.ekg-durmersheim.de`)
+      traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: https
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: https
+      traefik.http.routers.traefik.middlewares: traefik-https-redirect
+      traefik.http.routers.traefik-secure.entrypoints: https
+      traefik.http.routers.traefik-secure.rule: Host(`traefik.ekg-durmersheim.de`)
+      traefik.http.routers.traefik-secure.tls: true
+      traefik.http.routers.traefik-secure.tls.certresolver: hetzner
+      "traefik.http.routers.traefik-secure.tls.domains[0].main": ekg-durmersheim.de
+      "traefik.http.routers.traefik-secure.tls.domains[0].sans": \*.ekg-durmersheim.de
+      traefik.http.routers.traefik-secure.service: api@internal
+      traefik.http.routers.unmatchedwww.rule: HostRegexp(`{name:^www\..*}`)
+      traefik.http.routers.unmatchedwww.service: noop@internal
+      traefik.http.routers.unmatchedwww.priority: 2
+      traefik.http.routers.matchlast.rule: PathPrefix(`/`)
+      traefik.http.routers.matchlast.priority: 1
+      traefik.http.routers.matchlast.middlewares: addwww
+      traefik.http.middlewares.addwww.redirectregex.regex: ^https://(?:www\.)?(.*)
+      traefik.http.middlewares.addwww.redirectregex.replacement: https://www.$$1
 
 networks:
   proxy:

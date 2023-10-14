@@ -17,17 +17,17 @@ services:
       - wordpress-production-db
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wordpress-production.entrypoints=http"
-      - "traefik.http.routers.wordpress-production.rule=Host(`ekg-durmersheim.de`)"
-      - "traefik.http.middlewares.wordpress-production-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.wordpress-production.middlewares=wordpress-production-https-redirect"
-      - "traefik.http.routers.wordpress-production-secure.entrypoints=https"
-      - "traefik.http.routers.wordpress-production-secure.rule=Host(`ekg-durmersheim.de`)"
-      - "traefik.http.routers.wordpress-production-secure.tls=true"
-      - "traefik.http.routers.wordpress-production-secure.service=wordpress-production"
-      - "traefik.http.services.wordpress-production.loadbalancer.server.port=80"
-      - "traefik.docker.network=proxy"
+      - traefik.enable=true
+      - traefik.http.routers.wordpress-production.entrypoints=http
+      - traefik.http.routers.wordpress-production.rule=Host(`ekg-durmersheim.de`,`www.ekg-durmersheim.de`)
+      - traefik.http.middlewares.wordpress-production-https-redirect.redirectscheme.scheme=https
+      - traefik.http.routers.wordpress-production.middlewares=wordpress-production-https-redirect
+      - traefik.http.routers.wordpress-production-secure.entrypoints=https
+      - traefik.http.routers.wordpress-production-secure.rule=Host(`ekg-durmersheim.de`,`www.ekg-durmersheim.de`)
+      - traefik.http.routers.wordpress-production-secure.tls=true
+      - traefik.http.routers.wordpress-production-secure.service=wordpress-production
+      - traefik.http.services.wordpress-production.loadbalancer.server.port=80
+      - traefik.docker.network=proxy
 
   wordpress-production-db:
     image: mysql:latest
